@@ -103,6 +103,8 @@ authController.refreshToken = async (req, res, next) => {
       const newAccessToken = tokenHelper.getAccessToken(payload);
       const newRefreshToken = tokenHelper.getRefreshToken(payload);
 
+      dummyRefreshTokenDatabase.push(newRefreshToken);
+
       res.cookie('refreshToken', newRefreshToken, {
         httpOnly: true,
         path: '/',

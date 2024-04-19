@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-labels */
-import userApi from '@/api/userSlice';
+import userApi from '@/api/userApi';
 import { asyncThunkCreator, buildCreateSlice } from '@reduxjs/toolkit';
 
 const createAppSlide = buildCreateSlice({
@@ -28,6 +28,25 @@ const userSlice = createAppSlide({
           state.allUsers = action.payload;
         },
         rejected: (state) => {
+          state.allUsers = [];
+          state.isFetching = false;
+          state.error = true;
+        },
+      }
+    ),
+    deleteUser: create.asyncThunk(
+      async (params) => {
+        const response = await userApi.deleteUser(params);
+        return response.data || response;
+      },
+      {
+        pending: (state) => {
+          state.isFetching = true;
+        },
+        fulfilled: (state) => {
+          state.isFetching = false;
+        },
+        rejected: (state) => {
           state.isFetching = false;
           state.error = true;
         },
@@ -36,5 +55,5 @@ const userSlice = createAppSlide({
   }),
 });
 
-export const { getAllUsers } = userSlice.actions;
+export const { getAllUsers, deleteUser } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { publicRoutes } from '@/routes';
 import { Fragment } from 'react';
@@ -7,7 +7,7 @@ import ToastMessage from './components/ToastMessage';
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
       <ToastMessage>
         <div className="App min-h-screen">
           <Routes>
@@ -34,7 +34,7 @@ function App() {
           </Routes>
         </div>
       </ToastMessage>
-    </BrowserRouter>
+    </>
   );
 }
 

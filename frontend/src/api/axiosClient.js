@@ -22,8 +22,8 @@ axiosClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    throw new Error(error);
+    return Promise.reject(error);
   }
 );
 
-export { axiosClient };
+export default axiosClient;

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 function HeaderAccount() {
-  const userData = useSelector((state) => state.auth?.currentUser?.data);
+  const userData = useSelector((state) => state.auth?.currentUser);
   return (
     <Link className="header-account flex items-center rounded-xl space-x-2 duration-150">
       <img

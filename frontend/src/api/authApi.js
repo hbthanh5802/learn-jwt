@@ -1,4 +1,5 @@
-import { axiosClient } from './axiosClient';
+import axiosAuth from './axiosAuth';
+import axiosClient from './axiosClient';
 
 const authApi = {};
 
@@ -12,6 +13,28 @@ authApi.loginUser = (data) => {
 authApi.registerUser = (data) => {
   const url = '/auth/register';
   return axiosClient.post(url, data);
+};
+
+authApi.refreshToken = () => {
+  const url = '/auth/refresh';
+  return axiosClient.post(
+    url,
+    {},
+    {
+      withCredentials: true,
+    }
+  );
+};
+
+authApi.logoutUser = () => {
+  const url = '/auth/logout';
+  return axiosAuth.post(
+    url,
+    {},
+    {
+      withCredentials: true,
+    }
+  );
 };
 
 export default authApi;
