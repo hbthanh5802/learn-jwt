@@ -20,6 +20,11 @@ app.use(morgan('tiny'));
 const useRoutes = require('./routes/index.routes');
 useRoutes(app);
 
+app.use((error, req, res, next) => {
+  console.log('===> Error', error);
+  res.sendStatus(500);
+});
+
 const PORT = process.env.PORT;
 const database = require('./database/db');
 database

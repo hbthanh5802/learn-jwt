@@ -39,7 +39,9 @@ export function setupAxios(store) {
         ? refreshTokenRequest
         : authApi.refreshToken(accessToken);
       try {
+        console.log('Expired....', refreshTokenRequest);
         const response = await refreshTokenRequest;
+        console.log('Response', response);
         accessToken = response.meta.accessToken;
         if (accessToken) toast.info('Refresh token successfully!');
         store.dispatch(refreshToken(accessToken));
@@ -47,6 +49,7 @@ export function setupAxios(store) {
         refreshTokenRequest = null;
       } catch (error) {
         console.log('Error', error.response);
+        refreshTokenRequest = null;
         if (error.status === 401) {
           toast.info('Something went wrong. Please login again in 3 seconds', {
             onClose: () => myHistory.replace('/login'),
@@ -54,6 +57,7 @@ export function setupAxios(store) {
           });
         }
       }
+      refreshTokenRequest = null;
     }
 
     config.headers.Authorization = `Bearer ${accessToken}`;

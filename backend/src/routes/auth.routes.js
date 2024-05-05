@@ -10,5 +10,7 @@ router.post('/login', authController.loginUser);
 router.post('/refresh', authController.refreshToken);
 // LOGOUT
 router.post('/logout', authMiddleware.verifyToken, authController.logoutUser);
+// Verify account
+router.get('/verify/:token', authController.verifyAccount);
 
 module.exports = router;

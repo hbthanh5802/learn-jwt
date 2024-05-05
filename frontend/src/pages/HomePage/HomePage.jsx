@@ -3,6 +3,7 @@ import Loading from '@/components/Loading';
 import { getAllUsers } from '@/redux/userSlice';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 function HomePage() {
@@ -10,6 +11,7 @@ function HomePage() {
   const users = useSelector((state) => state.user.allUsers);
   const fetching = useSelector((state) => state.user.isFetching);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const params = {
@@ -19,11 +21,14 @@ function HomePage() {
       .unwrap()
       .then(() => {})
       .catch(() => {
-        toast.error('Failed to get all users', {
-          autoClose: 3000,
+        toast.error('Failed to get all users', { autoClose: 500 });
+        toast.info('You will need to login. Redirecting...', {
+          delay: 1000,
+          autoClose: 1000,
+          onClose: () => navigate('/login', { replace: true }),
         });
       });
-  }, [dispatch, accessToken]);
+  }, [dispatch, accessToken, navigate]);
 
   return (
     <div className="w-full flex justify-center">

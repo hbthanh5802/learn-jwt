@@ -20,6 +20,17 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
+    token: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    tokenExpireTime: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

@@ -39,7 +39,7 @@ function NavBar() {
         <div className="flex space-x-4">
           <HeaderAccount />
           <button
-            className="flex items-center justify-center text-center text-black px-4 py-2 hover:text-white hover:bg-violet-400 rounded-xl duration-150"
+            className="flex items-center justify-center text-center text-black px-4 py-2 hover:text-white hover:bg-violet-400 rounded-lg duration-150"
             onClick={handleLogout}
           >
             {isFetching ? <Loading /> : 'Logout'}

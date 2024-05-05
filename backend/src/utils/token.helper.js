@@ -6,14 +6,14 @@ const refreshKey = process.env.REFRESH_SECRET_KEY;
 
 tokenHelper.getAccessToken = (payload) => {
   const accessToken = jwt.sign(payload, accessKey, {
-    expiresIn: '30s',
+    expiresIn: '5s',
   });
   return accessToken;
 };
 
 tokenHelper.getRefreshToken = (payload) => {
-  const accessToken = jwt.sign(payload, refreshKey);
-  return accessToken;
+  const refreshToken = jwt.sign(payload, refreshKey);
+  return refreshToken;
 };
 
 module.exports = tokenHelper;

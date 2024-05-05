@@ -16,6 +16,7 @@ authApi.registerUser = (data) => {
 };
 
 authApi.refreshToken = () => {
+  console.log('Refresh........');
   const url = '/auth/refresh';
   return axiosClient.post(
     url,

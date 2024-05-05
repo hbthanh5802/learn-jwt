@@ -1,10 +1,13 @@
 const bcrypt = require('bcrypt');
+const randomBytes = require('randombytes');
 const jwt = require('jsonwebtoken');
 const userServices = require('../services/user.service');
 const tokenHelper = require('../utils/token.helper');
+const { sendEmail } = require('../utils/email.helper');
 const authController = {};
 
 let dummyRefreshTokenDatabase = [];
+const CRYPTO_KEY = process.env.CRYPTO_KEY;
 
 authController.registerUser = async (req, res, next) => {
   let response = {};
@@ -15,18 +18,43 @@ authController.registerUser = async (req, res, next) => {
     }
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
-    //
-    const payload = { username, email, password: hashedPassword };
-    response = await userServices.createUser(payload);
-    if (response.data) {
-      response.message = 'Succeed to register';
-    }
-    return res.status(response.statusCode).json(response);
+
+    // Generate random bytes
+    randomBytes(32, async (error, buffer) => {
+      if (error) {
+        response.statusCode = 500;
+        response.message = 'Something went wrong. Try again later!';
+        return res.status(500).json(response);
+      }
+
+      const verifyToken = buffer.toString('hex');
+
+      const payload = {
+        username,
+        email,
+        password: hashedPassword,
+        token: verifyToken,
+        tokenExpireTime: Date.now() + 3600000, // 1s = 1000ms
+      };
+
+      try {
+        response = await userServices.createUser(payload);
+        if (response.data) {
+          response.message = 'Succeed to register. But not active yet';
+          await sendEmail({
+            email: email,
+            subject: 'Verify Your Account',
+            content: `<a href='http://localhost:4009/api/auth/verify/${verifyToken}'>Verify Now</a>`,
+          });
+        }
+      } catch (error) {
+        response.statusCode = 500;
+        response.message = 'Failed to register';
+      }
+      return res.status(response.statusCode).json(response);
+    });
   } catch (error) {
-    response.message = 'Failed to register';
-    response.statusCode = 409;
-    console.log(response.message, error);
-    return res.status(500).json(response);
+    throw error;
   }
 };
 
@@ -65,6 +93,7 @@ authController.loginUser = async (req, res, next) => {
       response.meta = { accessToken };
       response.message = 'Succeed to login';
       response.statusCode = 200;
+
       return res.status(200).json(response);
     }
   } catch (error) {
@@ -118,7 +147,6 @@ authController.refreshToken = async (req, res, next) => {
 };
 
 authController.logoutUser = async (req, res, next) => {
-  res.clearCookie('refreshToken');
   let response = {
     statusCode: 200,
     message: 'Succeed to refresh access token',
@@ -128,7 +156,28 @@ authController.logoutUser = async (req, res, next) => {
   dummyRefreshTokenDatabase = dummyRefreshTokenDatabase.filter(
     (token) => token !== refreshToken
   );
+  res.clearCookie('refreshToken');
   return res.status(200).json(response);
+};
+
+authController.verifyAccount = async (req, res, next) => {
+  let response = {};
+  const { token } = req.params;
+  try {
+    if (!token) {
+      return res.sendStatus(404);
+    }
+    response = await userServices.fetchOneByCriteria({
+      token,
+      tokenExpireTime: { $gt: Date.now() },
+    });
+
+    console.log('response', response.data);
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log('Failed to login', error);
+    res.status(500).json(error);
+  }
 };
 
 module.exports = authController;
